@@ -1,0 +1,49 @@
+# Build output
+/bin/
+/obj/
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+*.sln.docstates
+
+# Visual Studio cache and temporary files
+.vs/
+*.vsconfig
+
+# NuGet Packages
+packages/
+*.nupkg
+
+# Blazor Server specific
+wwwroot/**/blazor.server.js*
+wwwroot/**/blazor*.map
+
+# Runtime-generated files
+*.log
+*.cache
+*.pid
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Environment-specific files
+appsettings*.json
+!appsettings.json
+!appsettings.Development.json
+
+# Test results
+TestResults/
+
+# Dependency directories
+node_modules/
+
+# Local db files (if any)
+*.db
+*.sqlite
+
+# SignalR or session-related temp files (if applicable)
+*.hub

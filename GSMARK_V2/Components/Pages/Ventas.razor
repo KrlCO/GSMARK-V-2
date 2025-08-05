@@ -1,0 +1,50 @@
+﻿@page "/ventas"
+@using GSMARK_V2.Models
+@inject GSMARK_V2.Interfaces.ITCVENTService TCVENTService
+
+<h3>Listado de Ventas</h3>
+
+@if (ventas == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sede</th>
+                <th>Línea Negocio</th>
+                <th>Secuencia</th>
+                <th>Vendedor</th>
+                <th>Fecha</th>
+                <th>Total Venta</th>
+                <th>Monto Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var venta in ventas)
+            {
+                <tr>
+                    <td>@venta.CO_SEDE</td>
+                    <td>@venta.CO_LINE_NEGO</td>
+                    <td>@venta.NU_SECU</td>
+                    <td>@venta.CO_VEND</td>
+                    <td>@venta.FE_VENT</td>
+                    <td>@venta.CA_TOTA_VENT</td>
+                    <td>@venta.IM_TOTA_VENT</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<TCVENT> ventas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ventas = await TCVENTService.GetVentsAsync();
+    }
+}
+
