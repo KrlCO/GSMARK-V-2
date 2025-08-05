@@ -1,0 +1,70 @@
+﻿@page "/productos"
+@using GSMARK_V2.Models
+@inject GSMARK_V2.Interfaces.ITMPRODService TMPRODService
+
+
+
+<h3>Listado de Productos</h3>
+
+<input type="text" value="@filtro" @oninput="OnFiltroChanged" placeholder="Buscar producto..." class="form-control mb-2" />
+
+@if (productos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else if (!productosFiltrados.Any())
+{
+    <p><em>No hay productos disponibles.</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id. Producto</th>
+                <th>Item Referencia</th>
+                <th>Descripción</th>
+                <th>Precio Unitario</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prod in productosFiltrados)
+            {
+                <tr>
+                    <td>@prod.CO_PROD</td>
+                    <td>@prod.CO_ITEM_REFE</td>
+                    <td>@prod.DE_PROD</td>
+                    <td>@prod.IM_PREC_UNIT.ToString("0.00")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<TMPROD> productos;
+    private IEnumerable<TMPROD> productosFiltrados;
+    private string filtro = string.Empty;
+
+    private void OnFiltroChanged(ChangeEventArgs e)
+    {
+        filtro = e.Value?.ToString() ?? string.Empty;
+
+        productosFiltrados = string.IsNullOrWhiteSpace(filtro)
+            ? productos
+            : productos.Where(p =>
+                (!string.IsNullOrEmpty(p.CO_PROD) && p.CO_PROD.Contains(filtro, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(p.DE_PROD) && p.DE_PROD.Contains(filtro, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(p.CO_ITEM_REFE) && p.CO_ITEM_REFE.Contains(filtro, StringComparison.OrdinalIgnoreCase))
+            );
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 'A' es el valor que se usa en el sistema original para listar productos
+        productos = await TMPRODService.GetProductsAsync("A");
+        productosFiltrados = productos;
+    }
+}

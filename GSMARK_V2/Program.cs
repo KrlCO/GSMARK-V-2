@@ -11,6 +11,9 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<ITCVENTRepository, TCVENTRepository>();
 builder.Services.AddScoped<ITCVENTService, TCVENTService>();
+builder.Services.AddScoped<ITMPRODRepository, TMPRODRepository>();
+builder.Services.AddScoped<ITMPRODService, TMPRODService>();
+
 
 
 var app = builder.Build();
