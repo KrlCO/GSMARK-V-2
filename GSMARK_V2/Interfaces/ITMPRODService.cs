@@ -1,9 +1,10 @@
-﻿using GSMARK_V2.Models;
+﻿using GSMARK_V2.DTO;
+using GSMARK_V2.Models;
 
 namespace GSMARK_V2.Interfaces
 {
     public interface ITMPRODService
     {
-        Task<IEnumerable<TMPROD>> GetProductsAsync(string isopvend);
+        Task<IEnumerable<TMPRODDTO>> GetProductsAsync(string isopvend);
     }
 }
