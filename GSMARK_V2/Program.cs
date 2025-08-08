@@ -1,7 +1,11 @@
 using GSMARK_V2.Components;
+using GSMARK_V2.Helpers;
 using GSMARK_V2.Interfaces;
 using GSMARK_V2.Repository;
 using GSMARK_V2.Services;
+using Microsoft.Extensions.Localization;
+using MudBlazor;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +18,15 @@ builder.Services.AddScoped<ITCVENTService, TCVENTService>();
 builder.Services.AddScoped<ITMPRODRepository, TMPRODRepository>();
 builder.Services.AddScoped<ITMPRODService, TMPRODService>();
 
+//MudBlazor
+builder.Services.AddMudServices();
+
+// Localizador dummy para que MudTablePager no falle
+builder.Services.AddSingleton(typeof(IStringLocalizer<>), typeof(DummyStringLocalizer<>));
 
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

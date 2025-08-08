@@ -1,70 +1,69 @@
 ﻿@page "/productos"
 @using GSMARK_V2.Models
+@using MudBlazor
 @inject GSMARK_V2.Interfaces.ITMPRODService TMPRODService
 
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-5">
+    <MudText Typo="Typo.h5" GutterBottom="true">Listado de Productos</MudText>
 
+    <MudPaper Elevation="3" Class="pa-4" Width="100%">
+        <MudTable Items="@productos"
+                  Dense="true"
+                  Striped="true"
+                  Bordered="true"
+                  Filter="new Func<TMPROD,bool>(FilterFunc)"
+                  RowsPerPage="10"
+                  Hover="true"
+                  Breakpoint="Breakpoint.Sm">
+            
+            <ToolBarContent>
+                <MudSpacer />
+                <MudTextField @bind-Value="searchString"
+                              Placeholder="Buscar producto..."
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              IconSize="Size.Medium"
+                              Class="mt-0" />
+            </ToolBarContent>
 
-<h3>Listado de Productos</h3>
+            <HeaderContent>
+                <MudTh>Id. Producto</MudTh>
+                <MudTh>Item Referencia</MudTh>
+                <MudTh>Descripción</MudTh>
+                <MudTh>Precio Unitario</MudTh>
+            </HeaderContent>
 
-<input type="text" value="@filtro" @oninput="OnFiltroChanged" placeholder="Buscar producto..." class="form-control mb-2" />
+            <RowTemplate Context="producto">
+                <MudTd DataLabel="Id. Producto">@producto.CO_PROD</MudTd>
+                <MudTd DataLabel="Item Referencia">@producto.CO_ITEM_REFE</MudTd>
+                <MudTd DataLabel="Descripción">@producto.DE_PROD</MudTd>
+                <MudTd DataLabel="Precio Unitario">@producto.IM_PREC_UNIT.ToString("0.00")</MudTd>
+            </RowTemplate>
 
-@if (productos == null)
-{
-    <p><em>Cargando...</em></p>
-}
-else if (!productosFiltrados.Any())
-{
-    <p><em>No hay productos disponibles.</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id. Producto</th>
-                <th>Item Referencia</th>
-                <th>Descripción</th>
-                <th>Precio Unitario</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var prod in productosFiltrados)
-            {
-                <tr>
-                    <td>@prod.CO_PROD</td>
-                    <td>@prod.CO_ITEM_REFE</td>
-                    <td>@prod.DE_PROD</td>
-                    <td>@prod.IM_PREC_UNIT.ToString("0.00")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+</MudContainer>
 
 @code {
-    private IEnumerable<TMPROD> productos;
-    private IEnumerable<TMPROD> productosFiltrados;
-    private string filtro = string.Empty;
-
-    private void OnFiltroChanged(ChangeEventArgs e)
-    {
-        filtro = e.Value?.ToString() ?? string.Empty;
-
-        productosFiltrados = string.IsNullOrWhiteSpace(filtro)
-            ? productos
-            : productos.Where(p =>
-                (!string.IsNullOrEmpty(p.CO_PROD) && p.CO_PROD.Contains(filtro, StringComparison.OrdinalIgnoreCase)) ||
-                (!string.IsNullOrEmpty(p.DE_PROD) && p.DE_PROD.Contains(filtro, StringComparison.OrdinalIgnoreCase)) ||
-                (!string.IsNullOrEmpty(p.CO_ITEM_REFE) && p.CO_ITEM_REFE.Contains(filtro, StringComparison.OrdinalIgnoreCase))
-            );
-
-        StateHasChanged();
-    }
+    private IEnumerable<TMPROD> productos = new List<TMPROD>();
+    private string searchString = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        // 'A' es el valor que se usa en el sistema original para listar productos
         productos = await TMPRODService.GetProductsAsync("A");
-        productosFiltrados = productos;
+    }
+
+    private bool FilterFunc(TMPROD producto)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+
+        return
+            (producto.CO_PROD?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (producto.CO_ITEM_REFE?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (producto.DE_PROD?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false);
     }
 }

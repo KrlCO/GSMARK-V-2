@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper.SqlBuilder" Version="2.1.66" />
+    <PackageReference Include="MudBlazor" Version="8.11.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
