@@ -1,0 +1,81 @@
+﻿@page "/buscar-test"
+@rendermode InteractiveServer
+@using MudBlazor
+
+<h3>Prueba Buscador Forzado</h3>
+
+<MudTextField Immediate="true" Value="@_immediateText" ValueChanged="@(async (string value) => await OnImmediateTextChanged(value))" HelperText="@_immediateText" Label="Immediate"
+              Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+
+<ul>
+    @foreach (var item in filteredProducts)
+    {
+        <li>@item</li>
+    }
+</ul>
+
+@code {
+    private string _normalText = "";
+    private string _immediateText = "";
+    private string _debouncedText = "";
+    private List<string> products = new()
+    {
+        "Coca Cola",
+        "Pepsi",
+        "Fanta",
+        "Sprite",
+        "Agua Cielo"
+    };
+    private List<string> filteredProducts = new();
+
+    protected override void OnInitialized()
+    {
+        filteredProducts = products;
+    }
+
+    private void UpdateFilteredProducts(string searchText)
+    {
+        try
+        {
+            filteredProducts = string.IsNullOrWhiteSpace(searchText)
+                ? products
+                : products.Where(p => p.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        catch (Exception ex)
+        {
+            // Loggea o maneja el error (por ahora, solo evita el crash)
+            Console.WriteLine($"Error en filtrado: {ex.Message}");
+            filteredProducts = products; // Fallback
+        }
+        StateHasChanged();
+    }
+
+    private async Task OnNormalTextChanged(string value)
+    {
+        _normalText = value;
+        UpdateFilteredProducts(_normalText);
+    }
+
+    private async Task OnImmediateTextChanged(string value)
+    {
+        _immediateText = value;
+        UpdateFilteredProducts(_immediateText);
+    }
+
+    private async Task OnDebouncedTextChanged(string value)
+    {
+        _debouncedText = value;
+    }
+
+    private void HandleIntervalElapsed(string debouncedText)
+    {
+        try
+        {
+            UpdateFilteredProducts(debouncedText);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error en debounce: {ex.Message}");
+        }
+    }
+}

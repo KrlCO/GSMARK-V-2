@@ -1,66 +1,63 @@
 ﻿@page "/productos"
+@rendermode InteractiveServer
 @using GSMARK_V2.DTO
-@using GSMARK_V2.Models
+@using MudBlazor
 @inject GSMARK_V2.Interfaces.ITMPRODService TMPRODService
-
-
 
 <h3>Listado de Productos</h3>
 
-<input type="text" @bind="filtro" @bind:event="oninput" placeholder="Buscar producto..." class="form-control mb-2" />
+<MudTextField Immediate="true"
+              Value="@searchText"
+              ValueChanged="@(async (string value) => await OnSearchChanged(value))"
+              Label="Buscar producto"
+              Variant="Variant.Outlined"
+              Adornment="Adornment.End"
+              AdornmentIcon="@Icons.Material.Filled.Search"
+              Class="mb-3" />
 
-
-
-@if (productos == null)
-{
-    <p><em>Cargando...</em></p>
-}
-else if (!ProductosFiltrados.Any())
-{
-    <p><em>No hay productos disponibles.</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id. Producto</th>
-                <th>Item Referencia</th>
-                <th>Descripción</th>
-                <th>Precio Unitario</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var prod in ProductosFiltrados)
-            {
-                <tr>
-                    <td>@prod.CO_PROD</td>
-                    <td>@prod.CO_ITEM_REFE</td>
-                    <td>@prod.DE_PROD</td>
-                    <td>@prod.IM_PREC_UNIT.ToString("0.00")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<MudTable Items="productosFiltrados" Bordered="true" Hover="true">
+    <HeaderContent>
+        <MudTh>Código</MudTh>
+        <MudTh>Descripción</MudTh>
+        <MudTh class="text-end">Precio Unitario</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Código">@context.CO_PROD</MudTd>
+        <MudTd DataLabel="Descripción">@context.DE_PROD</MudTd>
+        <MudTd DataLabel="Precio Unitario" Class="text-end">
+            @context.IM_PREC_UNIT.ToString("C")
+        </MudTd>
+    </RowTemplate>
+</MudTable>
 
 @code {
-    private IEnumerable<TMPRODDTO> productos;
-    private string filtro = string.Empty;
-
-    private IEnumerable<TMPRODDTO> ProductosFiltrados =>
-        string.IsNullOrWhiteSpace(filtro)
-        ? productos
-        : productos.Where(p =>
-            (!string.IsNullOrWhiteSpace(p.CO_PROD) && p.CO_PROD.Contains(filtro, StringComparison.OrdinalIgnoreCase)) ||
-            (!string.IsNullOrEmpty(p.DE_PROD) && p.DE_PROD.Contains(filtro, StringComparison.OrdinalIgnoreCase)) ||
-            (!string.IsNullOrEmpty(p.CO_ITEM_REFE) && p.CO_ITEM_REFE.Contains(filtro, StringComparison.OrdinalIgnoreCase))
-
-        );
+    private string searchText = string.Empty;
+    private IEnumerable<TMPRODDTO> productos = new List<TMPRODDTO>();
+    private IEnumerable<TMPRODDTO> productosFiltrados = new List<TMPRODDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        // 'A' es el valor que se usa en el sistema original para listar productos
         productos = await TMPRODService.GetProductsAsync("A");
+        productosFiltrados = productos;
+    }
+
+    private Task OnSearchChanged(string value)
+    {
+        searchText = value;
+
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            productosFiltrados = productos;
+        }
+        else
+        {
+            productosFiltrados = productos.Where(p =>
+                (!string.IsNullOrEmpty(p.CO_PROD) && p.CO_PROD.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(p.DE_PROD) && p.DE_PROD.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            );
+        }
+
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 }
