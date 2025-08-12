@@ -49,3 +49,23 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+
+/*.mud-table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}*/
+
+
+/*Estilo para el scroll de la tabla*/
+.table-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+    .table-scroll thead th {
+        position: sticky;
+        top: 0;
+        background-color: #212529; /* fondo igual que table-dark */
+        color: white;
+        z-index: 2;
+    }

@@ -4,36 +4,78 @@
 @using MudBlazor
 @inject GSMARK_V2.Interfaces.ITMPRODService TMPRODService
 
-<h3>Listado de Productos</h3>
+<h3>Productos</h3>
+
+<MudTextField Label="Código" Variant="Variant.Outlined" Value="@codigo" ReadOnly="true" />
+<MudTextField Label="Ref. Artículo Almacén" Variant="Variant.Outlined" Value="@codigoItem" ReadOnly="true" />
+<MudTextField Label="Descripción" Variant="Variant.Outlined" Value="@descripcion" ReadOnly="true" />
+<MudTextField Label="Precio Unitario" Variant="Variant.Outlined" Value="@precio" ReadOnly="true" />
 
 <MudTextField Immediate="true"
               Value="@searchText"
               ValueChanged="@(async (string value) => await OnSearchChanged(value))"
-              Label="Buscar producto"
+              Label="Buscar Producto"
               Variant="Variant.Outlined"
               Adornment="Adornment.End"
               AdornmentIcon="@Icons.Material.Filled.Search"
               Class="mb-3" />
 
-<MudTable Items="productosFiltrados" Bordered="true" Hover="true">
-    <HeaderContent>
-        <MudTh>Código</MudTh>
-        <MudTh>Descripción</MudTh>
-        <MudTh class="text-end">Precio Unitario</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Código">@context.CO_PROD</MudTd>
-        <MudTd DataLabel="Descripción">@context.DE_PROD</MudTd>
-        <MudTd DataLabel="Precio Unitario" Class="text-end">
-            @context.IM_PREC_UNIT.ToString("C")
-        </MudTd>
-    </RowTemplate>
-</MudTable>
+<div class="table-scroll">
+    <table class="@TableClass" style="width:100%;">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Ref. Artículo Almacén</th>
+                <th scope="col">Descripción</th>
+                <th scope="col" class="text-end">Precio Unitario</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prod in productosFiltrados)
+            {
+                <tr @ondblclick="() => OnRowDoubleClick(prod)" style="cursor: pointer;">
+                    <td>@prod.CO_PROD</td>
+                    <td>@prod.CO_ITEM_REFE</td>
+                    <td>@prod.DE_PROD</td>
+                    <td class="text-end">@prod.IM_PREC_UNIT.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .table-scroll {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+        .table-scroll thead th {
+            position: sticky;
+            top: 0;
+            background-color: #212529; /* fondo igual que table-dark */
+            color: white;
+            z-index: 2;
+        }
+</style>
 
 @code {
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+
+    private string TableClass => $"table{(hover ? " table-hover" : "")}{(striped ? " table-striped" : "")}{(bordered ? " table-bordered" : "")}{(dense ? " table-sm" : "")}";
+
     private string searchText = string.Empty;
     private IEnumerable<TMPRODDTO> productos = new List<TMPRODDTO>();
     private IEnumerable<TMPRODDTO> productosFiltrados = new List<TMPRODDTO>();
+
+    // Campos seleccionados
+    private string codigo;
+    private string codigoItem;
+    private string descripcion;
+    private string precio;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,18 +88,23 @@
         searchText = value;
 
         if (string.IsNullOrWhiteSpace(searchText))
-        {
             productosFiltrados = productos;
-        }
         else
-        {
             productosFiltrados = productos.Where(p =>
                 (!string.IsNullOrEmpty(p.CO_PROD) && p.CO_PROD.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(p.CO_ITEM_REFE) && p.CO_ITEM_REFE.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
                 (!string.IsNullOrEmpty(p.DE_PROD) && p.DE_PROD.Contains(searchText, StringComparison.OrdinalIgnoreCase))
             );
-        }
 
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    private void OnRowDoubleClick(TMPRODDTO prod)
+    {
+        codigo = prod.CO_PROD;
+        codigoItem = prod.CO_ITEM_REFE;
+        descripcion = prod.DE_PROD;
+        precio = prod.IM_PREC_UNIT.ToString();
     }
 }

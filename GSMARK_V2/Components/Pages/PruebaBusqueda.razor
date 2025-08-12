@@ -1,81 +1,80 @@
-﻿@page "/buscar-test"
+﻿@page "/test-pg"
 @rendermode InteractiveServer
-@using MudBlazor
 
-<h3>Prueba Buscador Forzado</h3>
+<h3>Página de prueba (Bootstrap table con hover y doble click)</h3>
 
-<MudTextField Immediate="true" Value="@_immediateText" ValueChanged="@(async (string value) => await OnImmediateTextChanged(value))" HelperText="@_immediateText" Label="Immediate"
-              Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+<div class="mb-3">
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="hover" @bind="hover" />
+        <label class="form-check-label" for="hover">Hover</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="dense" @bind="dense" />
+        <label class="form-check-label" for="dense">Dense (table-sm)</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="striped" @bind="striped" />
+        <label class="form-check-label" for="striped">Striped</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="bordered" @bind="bordered" />
+        <label class="form-check-label" for="bordered">Bordered</label>
+    </div>
+</div>
 
-<ul>
-    @foreach (var item in filteredProducts)
-    {
-        <li>@item</li>
-    }
-</ul>
+<div class="mb-2">
+    <strong>Fila seleccionada (doble click):</strong> @selectedText
+</div>
+
+<table class="@TableClass" style="width:100%;">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Género</th>
+            <th>IP</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in rowsData)
+        {
+            <tr @ondblclick="() => OnRowDoubleClick(r)" style="cursor: pointer;">
+                <td>@r.Id</td>
+                <td>@r.Name</td>
+                <td>@r.Email</td>
+                <td>@r.Gender</td>
+                <td>@r.Ip</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
-    private string _normalText = "";
-    private string _immediateText = "";
-    private string _debouncedText = "";
-    private List<string> products = new()
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+
+    private string TableClass => $"table{(hover ? " table-hover" : "")}{(striped ? " table-striped" : "")}{(bordered ? " table-bordered" : "")}{(dense ? " table-sm" : "")}";
+
+    private string selectedText = "(ninguna)";
+
+    private List<RowData> rowsData = new()
     {
-        "Coca Cola",
-        "Pepsi",
-        "Fanta",
-        "Sprite",
-        "Agua Cielo"
+        new RowData(1, "Krishna", "kpartner0@usatoday.com", "Male", "28.25.250.202"),
+        new RowData(2, "Webb", "wstitle1@ning.com", "Male", "237.168.134.114"),
+        new RowData(3, "Nathanil", "nneal2@cyberchimps.com", "Male", "92.6.0.175"),
+        new RowData(4, "Adara", "alockwood3@patch.com", "Female", "182.174.217.152"),
+        new RowData(5, "Cecilius", "cchaplin4@shinystat.com", "Male", "195.124.144.18"),
+        new RowData(6, "Cicely", "cemerine9@soup.io", "Female", "138.94.191.43"),
     };
-    private List<string> filteredProducts = new();
 
-    protected override void OnInitialized()
+    private void OnRowDoubleClick(RowData row)
     {
-        filteredProducts = products;
+        selectedText = $"{row.Id} - {row.Name} ({row.Email})";
+        // aquí puedes además poblar tus TextBoxes, e.g. codigo = row.Id.ToString();
     }
 
-    private void UpdateFilteredProducts(string searchText)
-    {
-        try
-        {
-            filteredProducts = string.IsNullOrWhiteSpace(searchText)
-                ? products
-                : products.Where(p => p.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-        catch (Exception ex)
-        {
-            // Loggea o maneja el error (por ahora, solo evita el crash)
-            Console.WriteLine($"Error en filtrado: {ex.Message}");
-            filteredProducts = products; // Fallback
-        }
-        StateHasChanged();
-    }
-
-    private async Task OnNormalTextChanged(string value)
-    {
-        _normalText = value;
-        UpdateFilteredProducts(_normalText);
-    }
-
-    private async Task OnImmediateTextChanged(string value)
-    {
-        _immediateText = value;
-        UpdateFilteredProducts(_immediateText);
-    }
-
-    private async Task OnDebouncedTextChanged(string value)
-    {
-        _debouncedText = value;
-    }
-
-    private void HandleIntervalElapsed(string debouncedText)
-    {
-        try
-        {
-            UpdateFilteredProducts(debouncedText);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error en debounce: {ex.Message}");
-        }
-    }
+    public record RowData(int Id, string Name, string Email, string Gender, string Ip);
 }
