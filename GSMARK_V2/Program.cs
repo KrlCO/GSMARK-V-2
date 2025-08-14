@@ -16,6 +16,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+//Servicios de MudBlazor
+builder.Services.AddMudServices();
+
 builder.Services.AddScoped<ITCVENTRepository, TCVENTRepository>();
 builder.Services.AddScoped<ITCVENTService, TCVENTService>();
 builder.Services.AddScoped<ITMPRODRepository, TMPRODRepository>();

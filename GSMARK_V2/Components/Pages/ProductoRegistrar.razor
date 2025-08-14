@@ -3,27 +3,28 @@
 @using MudBlazor
 @inject ITMPRODService TMPRODService
 @inject ISnackbar Snackbar
-@inject IDialogService DialogService
 
 <MudDialog>
     <DialogContent>
-        <MudTextField @bind-Value="_coItemRef" Label="CO_ITEM_REF" Immediate="true"
+        <MudTextField @bind-Value="_coItemRef" Label="Ref. Artículo Almacén" Immediate="true"
                       OnBlur="BuscarProductoPorReferencia"
                       Variant="Variant.Outlined" Required="true" />
 
-        <MudTextField @bind-Value="_desItemRef" Label="DES_ITEM_REF" Variant="Variant.Outlined" ReadOnly="true" />
+        <MudTextField @bind-Value="_desItemRef" Label="Desc. Item Orig." Variant="Variant.Outlined" ReadOnly="true" />
 
         <MudTextField @bind-Value="_deProd" Label="Descripción" Variant="Variant.Outlined" Required="true" />
-        <MudNumericField @bind-Value="_precioUnit" Label="Precio Unitario" Variant="Variant.Outlined" Required="true" />
+        <MudNumericField @bind-Value="_precioUnit" Label="Precio Unit. S/." Variant="Variant.Outlined" Required="true" />
     </DialogContent>
 
     <DialogActions>
-       @*  <MudButton Variant="Variant.Text" OnClick="Cancelar">Cancelar</MudButton> *@
+        <MudButton Variant="Variant.Text" OnClick="Cancelar">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Guardar">Guardar</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
     private string _coItemRef;
     private string _desItemRef;
     private string _deProd;
@@ -47,10 +48,10 @@
         }
     }
 
-    // private void Cancelar()
-    // {
-    //     MudDialog.();
-    // }
+    private void Cancelar()
+    {
+        MudDialog.Cancel();
+    }
 
     private async Task Guardar()
     {
@@ -67,10 +68,10 @@
             IM_PREC_UNIT = _precioUnit
         };
 
-        // Aquí llamarías a tu servicio para insertar
+        // Aquí llamarías a tu servicio real
         // await TMPRODService.InsertProductAsync(nuevoProducto);
 
         Snackbar.Add("Producto registrado con éxito", Severity.Success);
-        // MudDialog.Close(DialogResult.Ok(true));
+        MudDialog.Close(DialogResult.Ok(nuevoProducto));
     }
 }

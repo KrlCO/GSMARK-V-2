@@ -1,16 +1,19 @@
 ﻿@rendermode InteractiveServer
 @using MudBlazor
+@using MudBlazor.Services
 
 <MudDialog Class="blur dialog-background"
            TitleClass="blur dialog-background-title"
            ContentClass="dialog-background-surface py-10"
            ActionsClass="dialog-background-surface">
+
     <DialogContent>
-        Dialog Content
+        Test OK
     </DialogContent>
+
     <DialogActions>
-        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">OK</MudButton>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Guardar</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -35,9 +38,17 @@
 
 @code {
     [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance Modal { get; set; } = default!;
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Submit()
+    {
+        // Simulación de guardado
+        Console.WriteLine("Guardando producto...");
 
-    private void Cancel() => MudDialog.Cancel();
+        // Aquí pones tu lógica de guardado
+        // y si es exitoso cierras el modal
+        Modal.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => Modal.Cancel();
 }

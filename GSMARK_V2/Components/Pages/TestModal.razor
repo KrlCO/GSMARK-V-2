@@ -1,20 +1,36 @@
-﻿@page "/testmodalpg"
+﻿@page "/testdialog"
+@rendermode InteractiveServer
+@using GSMARK_V2.Components.Modals
 @using MudBlazor
 @inject IDialogService DialogService
 
-<MudButton OnClick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
-    Open custom styled dialog
+<MudDialogProvider />
+
+<MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+    Abrir dialog
 </MudButton>
 
 @code {
     private async Task OpenDialogAsync()
     {
+        Console.WriteLine("Intentando abrir el dialog");
+
         var options = new DialogOptions
         {
-            CloseOnEscapeKey = true,
-            CloseButton = true
+            CloseOnEscapeKey = false, // No cerrar con tecla Escape
+            CloseButton = false
         };
 
-        await DialogService.ShowAsync<ModaBlazor>("Styling Example Dialog", options);
+        var dialog = await DialogService.ShowAsync<Dialog>("Prueba de Modal", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            Console.WriteLine("Diálogo aceptado");
+        }
+        else
+        {
+            Console.WriteLine("Diálogo cancelado");
+        }
     }
 }

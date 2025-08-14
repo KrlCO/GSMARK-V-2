@@ -1,9 +1,12 @@
 ﻿@page "/productos"
 @rendermode InteractiveServer
 @using GSMARK_V2.DTO
+@using GSMARK_V2.Components.Modals
 @using MudBlazor
 @inject IDialogService DialogService
 @inject GSMARK_V2.Interfaces.ITMPRODService TMPRODService
+
+<MudDialogProvider />
 
 <h3>Productos</h3>
 
@@ -24,8 +27,8 @@
 <MudButton OnClick="OpenNuevoProductoDialog" Variant="Variant.Filled" Color="Color.Primary">
     Nuevo
 </MudButton>
-
-
+<br />
+<br />
 <div class="table-scroll">
     <table class="@TableClass" style="width:100%;">
         <thead class="table-dark">
@@ -59,7 +62,7 @@
         .table-scroll thead th {
             position: sticky;
             top: 0;
-            background-color: #212529; /* fondo igual que table-dark */
+            background-color: #212529;
             color: white;
             z-index: 2;
         }
@@ -77,7 +80,6 @@
     private IEnumerable<TMPRODDTO> productos = new List<TMPRODDTO>();
     private IEnumerable<TMPRODDTO> productosFiltrados = new List<TMPRODDTO>();
 
-    // Campos seleccionados
     private string codigo;
     private string codigoItem;
     private string descripcion;
@@ -92,7 +94,6 @@
     private Task OnSearchChanged(string value)
     {
         searchText = value;
-
         if (string.IsNullOrWhiteSpace(searchText))
             productosFiltrados = productos;
         else
@@ -124,20 +125,13 @@
             FullWidth = true
         };
 
-        var parameters = new DialogParameters
+        var dialog = await DialogService.ShowAsync<ProductoRegistrar>("Registrar Producto", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is TMPRODDTO nuevoProd)
         {
-            { "OnProductoGuardado", EventCallback.Factory.Create(this, OnProductoGuardado) }
-        };
-
-        await DialogService.ShowAsync<ProductoRegistrar>("Registrar Producto", parameters, options);
+            productos = await TMPRODService.GetProductsAsync("A");
+            productosFiltrados = productos;
+        }
     }
-
-    private Task OnProductoGuardado()
-    {
-        // Aquí recargas la lista de productos después de guardar
-        Console.WriteLine("Producto guardado, refrescar lista...");
-        return Task.CompletedTask;
-    }
-
-
 }

@@ -3,39 +3,44 @@
 @rendermode InteractiveServer
 @inject IDialogService DialogService
 
-<h3>Página testeo MudBlazor</h3>
+<h3>Testing Modal</h3>
 
 <div class="mb-2">
     <strong>Fila seleccionada:</strong> @selectedText
 </div>
 
-<MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+<MudButton @onclick="OpenDialogAsync"
+           StartIcon="@Icons.Material.Filled.Add"
+           Variant="Variant.Filled"
+           Color="Color.Primary">
     Abrir Modal
 </MudButton>
 
-<table class="@TableClass" style="width:100%;">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Género</th>
-            <th>IP</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var r in rowsData)
-        {
-            <tr @ondblclick="() => OnRowDoubleClick(r)" style="cursor: pointer;">
-                <td>@r.Id</td>
-                <td>@r.Name</td>
-                <td>@r.Email</td>
-                <td>@r.Gender</td>
-                <td>@r.Ip</td>
+<MudItem xs="12">
+    <table class="@TableClass" style="width:100%;">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Género</th>
+                <th>IP</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var r in rowsData)
+            {
+                <tr @ondblclick="() => OnRowDoubleClick(r)" style="cursor: pointer;">
+                    <td>@r.Id</td>
+                    <td>@r.Name</td>
+                    <td>@r.Email</td>
+                    <td>@r.Gender</td>
+                    <td>@r.Ip</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</MudItem>
 
 @code {
     private bool dense = false;
@@ -65,16 +70,14 @@
     public record RowData(int Id, string Name, string Email, string Gender, string Ip);
 
     private async Task OpenDialogAsync()
-{
-    var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
-    var dialog = await DialogService.ShowAsync<ModalPrueba>("Modal de prueba", options);
-
-    var result = await dialog.Result;
-    if (!result.Canceled) // ✅ propiedad correcta
     {
-        // Aquí puedes manejar el resultado del modal
-        Console.WriteLine("Modal aceptado");
-    }
-}
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+        var dialog = await DialogService.ShowAsync<ModaBlazor>("Modal de prueba", options);
 
+        var result = await dialog.Result;
+        if (!result.Canceled && result.Data is RowData nuevaFila)
+        {
+            rowsData.Add(nuevaFila);
+        }
+    }
 }
