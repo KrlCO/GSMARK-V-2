@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @using GSMARK_V2.DTO
 @using MudBlazor
+@inject IDialogService DialogService
 @inject GSMARK_V2.Interfaces.ITMPRODService TMPRODService
 
 <h3>Productos</h3>
@@ -19,6 +20,11 @@
               Adornment="Adornment.End"
               AdornmentIcon="@Icons.Material.Filled.Search"
               Class="mb-3" />
+
+<MudButton OnClick="OpenNuevoProductoDialog" Variant="Variant.Filled" Color="Color.Primary">
+    Nuevo
+</MudButton>
+
 
 <div class="table-scroll">
     <table class="@TableClass" style="width:100%;">
@@ -107,4 +113,31 @@
         descripcion = prod.DE_PROD;
         precio = prod.IM_PREC_UNIT.ToString();
     }
+
+    private async Task OpenNuevoProductoDialog()
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var parameters = new DialogParameters
+        {
+            { "OnProductoGuardado", EventCallback.Factory.Create(this, OnProductoGuardado) }
+        };
+
+        await DialogService.ShowAsync<ProductoRegistrar>("Registrar Producto", parameters, options);
+    }
+
+    private Task OnProductoGuardado()
+    {
+        // Aquí recargas la lista de productos después de guardar
+        Console.WriteLine("Producto guardado, refrescar lista...");
+        return Task.CompletedTask;
+    }
+
+
 }

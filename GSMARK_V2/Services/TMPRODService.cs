@@ -9,27 +9,34 @@ namespace GSMARK_V2.Services
 {
     public class TMPRODService : ITMPRODService
     {
-        private readonly string _serviceTMPROD;
+        private readonly ITMPRODRepository _service;
 
-        public TMPRODService(IConfiguration configuration)
+        public TMPRODService(ITMPRODRepository repository)
         {
-            _serviceTMPROD = configuration.GetConnectionString("DefaultConnection");
+            _service = repository;
         }
+
 
         public async Task<IEnumerable<TMPRODDTO>> GetProductsAsync(string isopvend)
         {
-            using var connection = new SqlConnection(_serviceTMPROD);
+            var products = await _service.GetProductsAsync(isopvend);
+            var productDtos = products.Select(p => new TMPRODDTO
+            {
+                CO_PROD = p.CO_PROD,
+                CO_ITEM_REFE = p.CO_ITEM_REFE,
+                DE_ITEM_ORIG = p.DE_ITEM_ORIG,
+                DE_PROD = p.DE_PROD,
+                IM_PREC_UNIT = p.IM_PREC_UNIT,
+            });
 
-            var parameters = new { ISOP_VEND = isopvend };
-
-            var products = await connection.QueryAsync<TMPRODDTO>(
-                "SP_TMPROD_Q02",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
-
-            return products;
+            return productDtos;
         }
+
+        public async Task<TMITEM?> GetProdByCodItemASync(string code)
+        {
+            return await _service.GetProdByCodItemASync(code);
+        }
+
 
     }
 }

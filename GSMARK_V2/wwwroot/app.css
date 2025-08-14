@@ -51,11 +51,6 @@ h1:focus {
 }
 
 
-/*.mud-table-hover tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.04) !important;
-}*/
-
-
 /*Estilo para el scroll de la tabla*/
 .table-scroll {
     max-height: 300px;

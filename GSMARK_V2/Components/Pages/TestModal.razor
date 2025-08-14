@@ -1,0 +1,20 @@
+﻿@page "/testmodalpg"
+@using MudBlazor
+@inject IDialogService DialogService
+
+<MudButton OnClick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+    Open custom styled dialog
+</MudButton>
+
+@code {
+    private async Task OpenDialogAsync()
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true
+        };
+
+        await DialogService.ShowAsync<ModaBlazor>("Styling Example Dialog", options);
+    }
+}

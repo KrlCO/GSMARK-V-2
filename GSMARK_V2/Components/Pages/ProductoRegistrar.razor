@@ -1,0 +1,76 @@
+﻿@using GSMARK_V2.Interfaces
+@using GSMARK_V2.Models
+@using MudBlazor
+@inject ITMPRODService TMPRODService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_coItemRef" Label="CO_ITEM_REF" Immediate="true"
+                      OnBlur="BuscarProductoPorReferencia"
+                      Variant="Variant.Outlined" Required="true" />
+
+        <MudTextField @bind-Value="_desItemRef" Label="DES_ITEM_REF" Variant="Variant.Outlined" ReadOnly="true" />
+
+        <MudTextField @bind-Value="_deProd" Label="Descripción" Variant="Variant.Outlined" Required="true" />
+        <MudNumericField @bind-Value="_precioUnit" Label="Precio Unitario" Variant="Variant.Outlined" Required="true" />
+    </DialogContent>
+
+    <DialogActions>
+       @*  <MudButton Variant="Variant.Text" OnClick="Cancelar">Cancelar</MudButton> *@
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Guardar">Guardar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string _coItemRef;
+    private string _desItemRef;
+    private string _deProd;
+    private decimal _precioUnit;
+
+    private async Task BuscarProductoPorReferencia()
+    {
+        if (!string.IsNullOrWhiteSpace(_coItemRef))
+        {
+            var prod = await TMPRODService.GetProdByCodItemASync(_coItemRef);
+            if (prod != null)
+            {
+                _desItemRef = prod.DE_ITEM;
+                Snackbar.Add("Referencia encontrada", Severity.Info);
+            }
+            else
+            {
+                _desItemRef = string.Empty;
+                Snackbar.Add("No se encontró el producto con esa referencia", Severity.Warning);
+            }
+        }
+    }
+
+    // private void Cancelar()
+    // {
+    //     MudDialog.();
+    // }
+
+    private async Task Guardar()
+    {
+        if (string.IsNullOrWhiteSpace(_coItemRef) || string.IsNullOrWhiteSpace(_deProd))
+        {
+            Snackbar.Add("Complete los campos obligatorios", Severity.Error);
+            return;
+        }
+
+        var nuevoProducto = new TMPROD
+        {
+            CO_ITEM_REFE = _coItemRef,
+            DE_PROD = _deProd,
+            IM_PREC_UNIT = _precioUnit
+        };
+
+        // Aquí llamarías a tu servicio para insertar
+        // await TMPRODService.InsertProductAsync(nuevoProducto);
+
+        Snackbar.Add("Producto registrado con éxito", Severity.Success);
+        // MudDialog.Close(DialogResult.Ok(true));
+    }
+}

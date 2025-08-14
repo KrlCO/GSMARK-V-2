@@ -1,30 +1,17 @@
 ﻿@page "/test-pg"
+@using MudBlazor
 @rendermode InteractiveServer
+@inject IDialogService DialogService
 
-<h3>Página de prueba (Bootstrap table con hover y doble click)</h3>
-
-<div class="mb-3">
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="hover" @bind="hover" />
-        <label class="form-check-label" for="hover">Hover</label>
-    </div>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="dense" @bind="dense" />
-        <label class="form-check-label" for="dense">Dense (table-sm)</label>
-    </div>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="striped" @bind="striped" />
-        <label class="form-check-label" for="striped">Striped</label>
-    </div>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="bordered" @bind="bordered" />
-        <label class="form-check-label" for="bordered">Bordered</label>
-    </div>
-</div>
+<h3>Página testeo MudBlazor</h3>
 
 <div class="mb-2">
-    <strong>Fila seleccionada (doble click):</strong> @selectedText
+    <strong>Fila seleccionada:</strong> @selectedText
 </div>
+
+<MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+    Abrir Modal
+</MudButton>
 
 <table class="@TableClass" style="width:100%;">
     <thead class="table-dark">
@@ -73,8 +60,21 @@
     private void OnRowDoubleClick(RowData row)
     {
         selectedText = $"{row.Id} - {row.Name} ({row.Email})";
-        // aquí puedes además poblar tus TextBoxes, e.g. codigo = row.Id.ToString();
     }
 
     public record RowData(int Id, string Name, string Email, string Gender, string Ip);
+
+    private async Task OpenDialogAsync()
+{
+    var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+    var dialog = await DialogService.ShowAsync<ModalPrueba>("Modal de prueba", options);
+
+    var result = await dialog.Result;
+    if (!result.Canceled) // ✅ propiedad correcta
+    {
+        // Aquí puedes manejar el resultado del modal
+        Console.WriteLine("Modal aceptado");
+    }
+}
+
 }
