@@ -18,7 +18,8 @@
         var options = new DialogOptions
         {
             CloseOnEscapeKey = false, // No cerrar con tecla Escape
-            CloseButton = false
+            CloseButton = false,
+            BackdropClick = false
         };
 
         var dialog = await DialogService.ShowAsync<Dialog>("Prueba de Modal", options);

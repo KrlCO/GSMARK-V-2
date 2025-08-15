@@ -12,6 +12,7 @@
 
 <MudTextField Label="Código" Variant="Variant.Outlined" Value="@codigo" ReadOnly="true" />
 <MudTextField Label="Ref. Artículo Almacén" Variant="Variant.Outlined" Value="@codigoItem" ReadOnly="true" />
+<MudTextField Label="Desc. Item Orig." Variant="Variant.Outlined" Value="@descripItem" ReadOnly="true" />
 <MudTextField Label="Descripción" Variant="Variant.Outlined" Value="@descripcion" ReadOnly="true" />
 <MudTextField Label="Precio Unitario" Variant="Variant.Outlined" Value="@precio" ReadOnly="true" />
 
@@ -33,8 +34,8 @@
     <table class="@TableClass" style="width:100%;">
         <thead class="table-dark">
             <tr>
-                <th scope="col">Código</th>
-                <th scope="col">Ref. Artículo Almacén</th>
+                <th scope="col">Código Producto</th>
+                <th scope="col">Item Referencia</th>
                 <th scope="col">Descripción</th>
                 <th scope="col" class="text-end">Precio Unitario</th>
             </tr>
@@ -83,6 +84,7 @@
     private string codigo;
     private string codigoItem;
     private string descripcion;
+    private string descripItem;
     private string precio;
 
     protected override async Task OnInitializedAsync()
@@ -100,7 +102,8 @@
             productosFiltrados = productos.Where(p =>
                 (!string.IsNullOrEmpty(p.CO_PROD) && p.CO_PROD.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
                 (!string.IsNullOrEmpty(p.CO_ITEM_REFE) && p.CO_ITEM_REFE.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
-                (!string.IsNullOrEmpty(p.DE_PROD) && p.DE_PROD.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                (!string.IsNullOrEmpty(p.DE_PROD) && p.DE_PROD.Contains(searchText, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(p.DE_ITEM) && p.DE_ITEM.Contains(searchText, StringComparison.OrdinalIgnoreCase))
             );
 
         StateHasChanged();
@@ -112,6 +115,7 @@
         codigo = prod.CO_PROD;
         codigoItem = prod.CO_ITEM_REFE;
         descripcion = prod.DE_PROD;
+        descripItem = prod.DE_ITEM;
         precio = prod.IM_PREC_UNIT.ToString();
     }
 
@@ -119,8 +123,9 @@
     {
         var options = new DialogOptions
         {
-            CloseOnEscapeKey = true,
-            CloseButton = true,
+            CloseOnEscapeKey = false,
+            CloseButton = false,
+            BackdropClick = false,
             MaxWidth = MaxWidth.Medium,
             FullWidth = true
         };

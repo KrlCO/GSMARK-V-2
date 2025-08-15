@@ -1,4 +1,5 @@
-﻿@using GSMARK_V2.Interfaces
+﻿@using GSMARK_V2.DTO
+@using GSMARK_V2.Interfaces
 @using GSMARK_V2.Models
 @using MudBlazor
 @inject ITMPRODService TMPRODService
@@ -6,6 +7,9 @@
 
 <MudDialog>
     <DialogContent>
+
+        <MudTextField @bind-Value="_coProd" Label="Codígo Producto" Variant="Variant.Outlined" ReadOnly="true" />
+
         <MudTextField @bind-Value="_coItemRef" Label="Ref. Artículo Almacén" Immediate="true"
                       OnBlur="BuscarProductoPorReferencia"
                       Variant="Variant.Outlined" Required="true" />
@@ -25,6 +29,7 @@
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
+    private string _coProd;
     private string _coItemRef;
     private string _desItemRef;
     private string _deProd;
@@ -61,9 +66,11 @@
             return;
         }
 
-        var nuevoProducto = new TMPROD
+        var nuevoProducto = new TMPRODDTO
         {
+            CO_PROD = _coProd,
             CO_ITEM_REFE = _coItemRef,
+            DE_ITEM_ORIG = _desItemRef,
             DE_PROD = _deProd,
             IM_PREC_UNIT = _precioUnit
         };

@@ -24,7 +24,7 @@ namespace GSMARK_V2.Services
             {
                 CO_PROD = p.CO_PROD,
                 CO_ITEM_REFE = p.CO_ITEM_REFE,
-                DE_ITEM_ORIG = p.DE_ITEM_ORIG,
+                DE_ITEM = p.DE_ITEM,
                 DE_PROD = p.DE_PROD,
                 IM_PREC_UNIT = p.IM_PREC_UNIT,
             });
