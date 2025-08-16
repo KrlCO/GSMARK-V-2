@@ -37,6 +37,10 @@ namespace GSMARK_V2.Services
             return await _service.GetProdByCodItemASync(code);
         }
 
+        public async Task<int> GetNextProductIdAsync()
+        {
+            return await _service.GetNextProductIdAsync();
+        }
 
     }
 }

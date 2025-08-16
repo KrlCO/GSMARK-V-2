@@ -75,6 +75,13 @@ namespace GSMARK_V2.Repository
             throw new NotImplementedException();
         }
 
-  
+        public async Task<int> GetNextProductIdAsync()
+        {
+            using var connection = CreateConnection();
+            var sql = "SELECT ISNULL(MAX(CO_PROD), 0) + 1 FROM TMPROD";
+            return await connection.ExecuteScalarAsync<int>(sql);
+        }
+
+
     }
 }

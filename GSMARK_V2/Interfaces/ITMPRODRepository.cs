@@ -12,5 +12,8 @@ namespace GSMARK_V2.Interfaces
         Task<int> UpdateProductAsync(TMPROD product);
         Task<int> DeleteProductAsync(int id);
 
+        //Para traer el codigo del producto que se va ingresar.
+        Task<int> GetNextProductIdAsync();
+
     }
 }

@@ -8,6 +8,8 @@ namespace GSMARK_V2.Interfaces
         Task<IEnumerable<TMPRODDTO>> GetProductsAsync(string isopvend);
         Task<TMITEM?> GetProdByCodItemASync(string code);
 
+        Task<int> GetNextProductIdAsync();
+
 
     }
 }

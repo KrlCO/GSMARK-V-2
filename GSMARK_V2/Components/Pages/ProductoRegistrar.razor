@@ -1,9 +1,11 @@
 ﻿@using GSMARK_V2.DTO
 @using GSMARK_V2.Interfaces
 @using GSMARK_V2.Models
+@using GSMARK_V2.Services
 @using MudBlazor
 @inject ITMPRODService TMPRODService
 @inject ISnackbar Snackbar
+
 
 <MudDialog>
     <DialogContent>
@@ -12,9 +14,10 @@
 
         <MudTextField @bind-Value="_coItemRef" Label="Ref. Artículo Almacén" Immediate="true"
                       OnBlur="BuscarProductoPorReferencia"
+                      OnKeyDown="@(async (e)=> await OnItemCodeKeyDown(e))"
                       Variant="Variant.Outlined" Required="true" />
 
-        <MudTextField @bind-Value="_desItemRef" Label="Desc. Item Orig." Variant="Variant.Outlined" ReadOnly="true" />
+        <MudTextField @bind-Value="@_desItemRef" Label="Desc. Item Orig." Variant="Variant.Outlined" ReadOnly="true" />
 
         <MudTextField @bind-Value="_deProd" Label="Descripción" Variant="Variant.Outlined" Required="true" />
         <MudNumericField @bind-Value="_precioUnit" Label="Precio Unit. S/." Variant="Variant.Outlined" Required="true" />
@@ -35,6 +38,35 @@
     private string _deProd;
     private decimal _precioUnit;
 
+
+
+    // private async Task BuscarProductoPorReferencia()
+    // {
+    //     try
+    //     {
+    //         if (!string.IsNullOrWhiteSpace(_coItemRef))
+    //         {
+    //             var result = await TMPRODService.GetProdByCodItemASync(_coItemRef);
+    //             if (result != null)
+    //             {
+    //                 _desItemRef = result.DE_ITEM;
+    //                 StateHasChanged();
+    //             }
+    //             else
+    //             {
+    //                 _desItemRef = string.Empty;
+    //             }
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine($"Error al buscar producto: {ex.Message}");
+    //         _desItemRef = string.Empty;
+    //     }
+    // }
+
+
+
     private async Task BuscarProductoPorReferencia()
     {
         if (!string.IsNullOrWhiteSpace(_coItemRef))
@@ -53,6 +85,54 @@
         }
     }
 
+    // private async Task OnItemCodeKeyDown(KeyboardEventArgs e)
+    // {
+    //     if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(_coItemRef))
+    //     {
+    //         var item = await TMPRODService.GetProdByCodItemASync(_coItemRef);
+
+    //         if (item != null)
+    //         {
+    //             _desItemRef = item.DE_ITEM; // lo que devuelve el SP
+    //         }
+    //         else
+    //         {
+    //             _desItemRef = string.Empty;
+    //             // aquí podrías lanzar un snackbar o mensaje
+    //             // Snackbar.Add("El código ingresado no existe o está inactivo.", Severity.Warning);
+    //         }
+    //     }
+    // }
+
+
+    private async Task OnItemCodeKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(_coItemRef))
+        {
+            var item = await TMPRODService.GetProdByCodItemASync(_coItemRef);
+
+            if (item != null)
+            {
+                _desItemRef = item.DE_ITEM; // lo que devuelve el SP
+            }
+            else
+            {
+                _desItemRef = string.Empty;
+
+                Snackbar.Add(
+                    "El código ingresado no existe o está inactivo.",
+                    Severity.Warning,
+                    config =>
+                    {
+                        config.RequireInteraction = true;
+                        config.ShowCloseIcon = true;
+                        config.VisibleStateDuration = 5000; // 4 segundos
+                    });
+            }
+        }
+    }
+
+
     private void Cancelar()
     {
         MudDialog.Cancel();
@@ -70,7 +150,7 @@
         {
             CO_PROD = _coProd,
             CO_ITEM_REFE = _coItemRef,
-            DE_ITEM_ORIG = _desItemRef,
+            DE_ITEM = _desItemRef,
             DE_PROD = _deProd,
             IM_PREC_UNIT = _precioUnit
         };
@@ -81,4 +161,22 @@
         Snackbar.Add("Producto registrado con éxito", Severity.Success);
         MudDialog.Close(DialogResult.Ok(nuevoProducto));
     }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     var nextId = await TMPRODService.GetNextProductIdAsync();
+    //     _coProd = nextId.ToString();
+    // }
+
+
+
+    // private async Task OnItemCodeKeyDown(KeyboardEventArgs e)
+    // {
+    //     if (e.Key == "Enter")
+    //     {
+    //         await BuscarProductoPorReferencia();
+    //     }
+    // }
+
+
 }
