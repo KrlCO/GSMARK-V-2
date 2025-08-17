@@ -162,11 +162,20 @@
         MudDialog.Close(DialogResult.Ok(nuevoProducto));
     }
 
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     var nextId = await TMPRODService.GetNextProductIdAsync();
-    //     _coProd = nextId.ToString();
-    // }
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _coProd = await TMPRODService.GetNextCoProdAsync();
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add($"Error al obtener el siguiente código de producto: {ex.Message}", Severity.Error);
+            _coProd = string.Empty;
+        }
+    }
+
+  
 
 
 

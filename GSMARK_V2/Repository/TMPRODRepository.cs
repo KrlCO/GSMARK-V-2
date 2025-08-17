@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using GSMARK_V2.DTO;
 using GSMARK_V2.Interfaces;
 using GSMARK_V2.Models;
 using MudBlazor.State.Builder;
@@ -75,13 +76,17 @@ namespace GSMARK_V2.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<int> GetNextProductIdAsync()
+        public async Task<string> GetNextCoProdAsync()
         {
             using var connection = CreateConnection();
-            var sql = "SELECT ISNULL(MAX(CO_PROD), 0) + 1 FROM TMPROD";
-            return await connection.ExecuteScalarAsync<int>(sql);
-        }
 
+                var result = await connection.QueryFirstOrDefaultAsync<NextCO_PRODDTO>(
+                 "SP_TMPROD_Q10", commandType: CommandType.StoredProcedure
+                );
+            return result?.NextCO_PROD ?? string .Empty;
+
+
+        }
 
     }
 }

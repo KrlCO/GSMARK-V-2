@@ -32,15 +32,19 @@ namespace GSMARK_V2.Services
             return productDtos;
         }
 
+        //public async Task<IEnumerable<TMPROD>> GetProductsAsync(string isopVend)
+        //{
+        //    return await _repository.GetProductsAsync(isopVend);
+        //}
+
         public async Task<TMITEM?> GetProdByCodItemASync(string code)
         {
             return await _service.GetProdByCodItemASync(code);
         }
 
-        public async Task<int> GetNextProductIdAsync()
+        public async Task<string> GetNextCoProdAsync()
         {
-            return await _service.GetNextProductIdAsync();
+            return await _service.GetNextCoProdAsync();
         }
-
     }
 }
