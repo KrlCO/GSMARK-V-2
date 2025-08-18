@@ -1,10 +1,18 @@
 ﻿@rendermode InteractiveServer
 @using MudBlazor
 @using MudBlazor.Services
+@inject IDialogService DialogService
 
-<MudDialog Class="blur dialog-background" TitleClass="blur dialog-background-title" ContentClass="dialog-background-surface py-10" ActionsClass="dialog-background-surface">
+<MudDialog Class="blur dialog-background"
+           TitleClass="blur dialog-background-title"
+           ContentClass="dialog-background-surface py-10"
+           ActionsClass="dialog-background-surface"
+           @onkeydown="HandleKeyDown"
+           tabindex="0">
     <DialogContent>
-        Dialog Content
+        Dialog Test sucessfull!
+        <br />
+        Presiona <b>F2</b> para abrir el segundo dialog.
     </DialogContent>
     <DialogActions>
         <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
@@ -38,4 +46,13 @@
     private void Submit() => Modal.Close(DialogResult.Ok(true));
 
     private void Cancel() => Modal.Cancel();
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Code == "F2")
+        {
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, CloseOnEscapeKey = false, FullWidth = true };
+            await DialogService.ShowAsync<SecondDialog>("Segundo Dialog", options);
+        }
+    }
 }

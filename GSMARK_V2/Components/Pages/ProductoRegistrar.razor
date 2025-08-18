@@ -39,34 +39,6 @@
     private decimal _precioUnit;
 
 
-
-    // private async Task BuscarProductoPorReferencia()
-    // {
-    //     try
-    //     {
-    //         if (!string.IsNullOrWhiteSpace(_coItemRef))
-    //         {
-    //             var result = await TMPRODService.GetProdByCodItemASync(_coItemRef);
-    //             if (result != null)
-    //             {
-    //                 _desItemRef = result.DE_ITEM;
-    //                 StateHasChanged();
-    //             }
-    //             else
-    //             {
-    //                 _desItemRef = string.Empty;
-    //             }
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine($"Error al buscar producto: {ex.Message}");
-    //         _desItemRef = string.Empty;
-    //     }
-    // }
-
-
-
     private async Task BuscarProductoPorReferencia()
     {
         if (!string.IsNullOrWhiteSpace(_coItemRef))
@@ -84,25 +56,6 @@
             }
         }
     }
-
-    // private async Task OnItemCodeKeyDown(KeyboardEventArgs e)
-    // {
-    //     if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(_coItemRef))
-    //     {
-    //         var item = await TMPRODService.GetProdByCodItemASync(_coItemRef);
-
-    //         if (item != null)
-    //         {
-    //             _desItemRef = item.DE_ITEM; // lo que devuelve el SP
-    //         }
-    //         else
-    //         {
-    //             _desItemRef = string.Empty;
-    //             // aquí podrías lanzar un snackbar o mensaje
-    //             // Snackbar.Add("El código ingresado no existe o está inactivo.", Severity.Warning);
-    //         }
-    //     }
-    // }
 
 
     private async Task OnItemCodeKeyDown(KeyboardEventArgs e)
@@ -155,7 +108,7 @@
             IM_PREC_UNIT = _precioUnit
         };
 
-        // Aquí llamarías a tu servicio real
+        // llamado al servicio real
         // await TMPRODService.InsertProductAsync(nuevoProducto);
 
         Snackbar.Add("Producto registrado con éxito", Severity.Success);
@@ -174,18 +127,6 @@
             _coProd = string.Empty;
         }
     }
-
-  
-
-
-
-    // private async Task OnItemCodeKeyDown(KeyboardEventArgs e)
-    // {
-    //     if (e.Key == "Enter")
-    //     {
-    //         await BuscarProductoPorReferencia();
-    //     }
-    // }
 
 
 }

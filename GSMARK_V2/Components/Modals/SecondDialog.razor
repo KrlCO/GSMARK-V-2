@@ -1,0 +1,19 @@
+﻿@using MudBlazor
+@rendermode InteractiveServer
+@inject IDialogService DialogService
+
+<MudDialog Title="Segundo Dialog">
+    <DialogContent>
+        ¡Este es el segundo dialog abierto con tecla!
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => MudDialog.Close()">Cerrar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance MudDialog { get; set; } = default!;
+}
+
+}
