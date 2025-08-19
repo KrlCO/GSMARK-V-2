@@ -1,0 +1,56 @@
+﻿@using GSMARK_V2.DTO
+@using GSMARK_V2.Interfaces
+@using GSMARK_V2.Models
+@using GSMARK_V2.Services
+@using MudBlazor
+@inject ITMPRODService TMPRODService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog Title="Buscar Producto">
+    <DialogContent>
+        <MudTextField @bind-Value="_search" Placeholder="Buscar por código o descripción..." Immediate="true" />
+
+        <MudTable Items="_items" Hover="true" Dense="true" Bordered="true">
+            <HeaderContent>
+                <MudTh>Código</MudTh>
+                <MudTh>Descripción</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Código">@context.CO_ITEM</MudTd>
+                <MudTd DataLabel="Descripción">@context.DE_ITEM</MudTd>
+                <MudTd>
+                    <MudButton Variant="Variant.Text" OnClick="@(() => SelectItem(context))">Seleccionar</MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancelar">Cancelar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private string _search;
+    private List<TMITEMDTO> _items = new(); // se llena desde servicio
+
+    private void SelectItem(TMITEMDTO item)
+    {
+        MudDialog.Close(DialogResult.Ok(item));
+    }
+
+    private void Cancelar() => MudDialog.Cancel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // aquí llamas a tu servicio que trae productos de TMITEM
+        _items = new()
+        {
+            new TMITEMDTO { CO_ITEM = "ITM001", DE_ITEM = "Producto de prueba 1" },
+            new TMITEMDTO { CO_ITEM = "ITM002", DE_ITEM = "Producto de prueba 2" }
+        };
+    }
+}

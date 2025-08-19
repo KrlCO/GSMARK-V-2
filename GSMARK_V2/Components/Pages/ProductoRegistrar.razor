@@ -5,9 +5,10 @@
 @using MudBlazor
 @inject ITMPRODService TMPRODService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 
-<MudDialog>
+@* <MudDialog>
     <DialogContent>
 
         <MudTextField @bind-Value="_coProd" Label="Codígo Producto" Variant="Variant.Outlined" ReadOnly="true" />
@@ -15,6 +16,28 @@
         <MudTextField @bind-Value="_coItemRef" Label="Ref. Artículo Almacén" Immediate="true"
                       OnBlur="BuscarProductoPorReferencia"
                       OnKeyDown="@(async (e)=> await OnItemCodeKeyDown(e))"
+                      Variant="Variant.Outlined" Required="true" />
+
+        <MudTextField @bind-Value="@_desItemRef" Label="Desc. Item Orig." Variant="Variant.Outlined" ReadOnly="true" />
+
+        <MudTextField @bind-Value="_deProd" Label="Descripción" Variant="Variant.Outlined" Required="true" />
+        <MudNumericField @bind-Value="_precioUnit" Label="Precio Unit. S/." Variant="Variant.Outlined" Required="true" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Variant="Variant.Text" OnClick="Cancelar">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Guardar">Guardar</MudButton>
+    </DialogActions>
+</MudDialog> *@
+
+<MudDialog @onkeydown="HandleKeyDown" tabindex="0">
+    <DialogContent>
+
+        <MudTextField @bind-Value="_coProd" Label="Codígo Producto" Variant="Variant.Outlined" ReadOnly="true" />
+
+        <MudTextField @bind-Value="_coItemRef" Label="Ref. Artículo Almacén" Immediate="true"
+                      OnBlur="BuscarProductoPorReferencia"
+                      OnKeyDown="@(async (e) => await OnItemCodeKeyDown(e))"
                       Variant="Variant.Outlined" Required="true" />
 
         <MudTextField @bind-Value="@_desItemRef" Label="Desc. Item Orig." Variant="Variant.Outlined" ReadOnly="true" />
@@ -72,15 +95,29 @@
             {
                 _desItemRef = string.Empty;
 
-                Snackbar.Add(
-                    "El código ingresado no existe o está inactivo.",
-                    Severity.Warning,
-                    config =>
-                    {
-                        config.RequireInteraction = true;
-                        config.ShowCloseIcon = true;
-                        config.VisibleStateDuration = 5000; // 4 segundos
-                    });
+                Snackbar.Add("El código ingresado no existe o está inactivo.", Severity.Warning);
+            }
+        }
+    }
+
+    // 🔹 Detectar tecla presionada dentro del dialog
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Code == "F2")
+        {
+            // var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, CloseOnEscapeKey = false, FullWidth = true };
+            // await DialogService.ShowAsync<SecondDialog>("Segundo Dialog", options);
+
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+            var dialog = await DialogService.ShowAsync<DialogTMITEN>("Buscar Producto", options);
+
+            var result = await dialog.Result;
+
+            if (!result.Canceled && result.Data is TMITEMDTO selectedItem)
+            {
+                // cuando selecciona el producto en el segundo dialog
+                _coItemRef = selectedItem.CO_ITEM;
+                _desItemRef = selectedItem.DE_ITEM;
             }
         }
     }
