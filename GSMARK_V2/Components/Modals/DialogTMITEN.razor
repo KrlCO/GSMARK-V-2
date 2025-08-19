@@ -6,10 +6,12 @@
 @inject ITMPRODService TMPRODService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject ITMITEMService TMITEMService
 
 <MudDialog Title="Buscar Producto">
     <DialogContent>
-        <MudTextField @bind-Value="_search" Placeholder="Buscar por código o descripción..." Immediate="true" />
+        <MudTextField @bind-Value="_search" Placeholder="Buscar por código o descripción..."
+                      Immediate="true" OnKeyDown="@(async e => await OnSearchKeyDown(e))" />
 
         <MudTable Items="_items" Hover="true" Dense="true" Bordered="true">
             <HeaderContent>
@@ -44,13 +46,31 @@
 
     private void Cancelar() => MudDialog.Cancel();
 
+
+    // 🔹 Cuando se presiona Enter en el campo de búsqueda
+    private async Task OnSearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(_search))
+        {
+            _items = (await TMITEMService.BuscarPorCadenaAsync(_search))
+                     .Select(x => new TMITEMDTO { CO_ITEM = x.CO_ITEM, DE_ITEM = x.DE_ITEM })
+                     .ToList();
+            StateHasChanged();
+
+            if (_items.Count == 0)
+                Snackbar.Add("No se encontraron resultados", Severity.Warning);
+        }
+    }
+
+
+
     protected override async Task OnInitializedAsync()
     {
-        // aquí llamas a tu servicio que trae productos de TMITEM
-        _items = new()
+        // carga inicial con "I" (busqueda por inicio)
+        _items = (await TMITEMService.BuscarPorInicioAsync("")).Select(x => new TMITEMDTO
         {
-            new TMITEMDTO { CO_ITEM = "ITM001", DE_ITEM = "Producto de prueba 1" },
-            new TMITEMDTO { CO_ITEM = "ITM002", DE_ITEM = "Producto de prueba 2" }
-        };
+            CO_ITEM = x.CO_ITEM,
+            DE_ITEM = x.DE_ITEM
+        }).ToList();
     }
 }

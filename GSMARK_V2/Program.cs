@@ -6,8 +6,18 @@ using GSMARK_V2.Services;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using MudBlazor.Services;
+using System.Data;
+using System.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// Configuración de la cadena de conexión desde appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Registrar IDbConnection como scoped
+builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -23,6 +33,9 @@ builder.Services.AddScoped<ITCVENTRepository, TCVENTRepository>();
 builder.Services.AddScoped<ITCVENTService, TCVENTService>();
 builder.Services.AddScoped<ITMPRODRepository, TMPRODRepository>();
 builder.Services.AddScoped<ITMPRODService, TMPRODService>();
+builder.Services.AddScoped<ITMITEMRepository, TMITEMRepository>();
+builder.Services.AddScoped<ITMITEMService, TMITEMService>();
+
 
 //MudBlazor
 builder.Services.AddMudServices();
